@@ -39,8 +39,8 @@ from sklearn.metrics import accuracy_score
 # GridSearch를 활용한 하이퍼파라미터 튜닝
 param_grid = {
     "criterion" : ['gini', 'entropy'],
-    "max_depth" : [2,5],
-    "min_samples_split" : [2, 10],
+    "max_depth" : [2, 3, 4, 5],
+    "min_samples_split" : [2, 5, 10],
     "min_samples_leaf" : [1, 2, 4]
 }
 
