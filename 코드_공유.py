@@ -19,10 +19,64 @@ wine = load_wine()
 
 ''' 코드 작성 바랍니다 '''
 
+# 데이터프레임 생성
+df = pd.DataFrame(data=wine.data, columns = wine.feature_names)
+df['target'] = wine.target
+
+# feature와 target의 데이터 분리
+X = df.drop('target', axis=1)
+y = df['target']
+
+# 학습데이터와 테스트 데이터로 분리(test size 0.2, random_state 42)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size= 0.2, random_state= 42)
 
 ####### A 작업자 작업 수행 #######
 
 ''' 코드 작성 바랍니다 '''
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.metrics import accuracy_score
+
+# GridSearch를 활용한 하이퍼파라미터 튜닝
+param_grid = {
+    "criterion" : ['gini', 'entropy'],
+    "max_depth" : [2,5],
+    "min_samples_split" : [2, 10],
+    "min_samples_leaf" : [1, 2, 4]
+}
+
+# HPO
+clf_grid = DecisionTreeClassifier(random_state=42)
+
+# core
+grid_search = GridSearchCV(clf_grid, param_grid, cv =5)
+
+# 하이퍼파라미터를 찾고, fitting 수행
+grid_search.fit(X_train,y_train)
+
+# accuracy를 기준으로 모델 정확도 평가
+best_params = grid_search.best_params_
+best_model = grid_search.best_estimator_
+
+y_pred_grid = best_model.predict(X_test)
+accuracy_grid = accuracy_score(y_test, y_pred_grid)
+
+# 특성 Importacne
+importances = best_model.feature_importances_
+
+print(f"Best Hyper-parmeter {best_params}")
+print(f"Best Score {accuracy_grid}")
+
+# Best model의 Feature Importance를  시각화
+plt.figure(figsize = (20,6))
+
+# 막대 그래프 생성
+plt.bar(range(len(importances)), importances, width=0.3)
+plt.xlabel('Feature')
+plt.ylabel('importances')
+plt.title('Feature Importance')
+plt.xticks(range(len(importances)), X.columns, rotation = 45)
+plt.show()
+
 
 
 
